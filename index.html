@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrollable Modal with Fixed Close Button and Transition</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .modal-container {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-container.show {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto 5% auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 90%;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background-color: #fefefe;
+            z-index: 1;
+            padding: 3px 20px;
+            border-bottom: 1px solid #ddd;
+            width: 100%;
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header.hidden {
+            display: none;
+        }
+
+        .description-content-wrapper {
+            display: flex;
+            flex: 1;
+            transition: transform 0.2s ease-in-out;
+            overflow: hidden;
+        }
+
+        .description {
+            width: 30%;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            background-color: #f9f9f9;
+            box-sizing: border-box;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .content {
+            width: 70%;
+            padding: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .close {
+            color: rgb(0, 0, 0);
+            background-color: rgb(230, 228, 228); /* Grey background */
+            border-radius: 50%; /* Make it a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            cursor: pointer;
+            z-index: 3;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 30px; /* Fixed width */
+            height: 30px; /* Fixed height */
+            border: none;
+        }
+       
+
+        .open-modal {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            transform: translateY(-100%);
+        }
+
+        .visible {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 800px) {
+            .modal-header { 
+                position: sticky;
+                top: 0; 
+                z-index: 1; 
+                transition: transform 0.3s ease-in-out; }
+            .modal-content {
+                flex-direction: column;
+            }
+            .description-content-wrapper {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .description {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .content {
+                width: 100%;
+                overflow-y: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Multiple buttons to open the modal -->
+    <button class="open-modal" onclick="openModal('content1')">Open Modal 1</button>
+    <button class="open-modal" onclick="openModal('content2')">Open Modal 2</button>
+
+    <div id="myModal" class="modal-container">
+        <div class="modal-content">
+            <div class="modal-header visible" id="modalHeader">
+                <h1 id="modalTitle">Modal Title</h1>
+            </div>
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="description-content-wrapper">
+                <div class="description">
+                    <h2>Description</h2>
+                    <p>This is the description section. It will only scroll when there is enough content. It should be used to provide contextual information or guidelines related to the content. This modal layout allows for a fixed description section while the main content remains scrollable independently.</p>
+                </div>
+                <div class="content" id="modalContent">
+                    <div id="content1" class="long-text">
+                        <p>Content for Modal 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                    <div id="content2" class="long-text" style="display:none;">
+                        <p>Content for Modal 2. More text here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the modal element
+        const modal = document.getElementById("myModal");
+        const modalHeader = document.getElementById("modalHeader");
+        const contents = document.querySelectorAll('.long-text');
+
+        // Function to open the modal with specific content
+        function openModal(contentId) {
+            contents.forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(contentId).style.display = 'block';
+            modal.style.display = "block";
+            setTimeout(() => {
+                modal.classList.add("show");
+            }, 0);
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 300);
+        }
+
+        // Close the modal if the user clicks outside of the modal content
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Track scroll direction
+        let lastScrollTop = 0;
+        document.getElementById('modalContent').addEventListener('scroll', function() {
+            let scrollTop = this.scrollTop;
+            if (scrollTop > lastScrollTop) {
+                modalHeader.classList.add('hidden');
+                modalHeader.classList.remove('visible');
+            } else {
+                modalHeader.classList.add('visible');
+                modalHeader.classList.remove('hidden');
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+</body>
+</html>
